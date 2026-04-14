@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 const PASSWORD = process.env.SITE_PASSWORD ?? "sdjbrl2604@";
 const COOKIE = "said_auth";
-const MAX_AGE = 60 * 60 * 24 * 30; // 30 jours
-
 export async function POST(request: NextRequest) {
   const { password } = await request.json();
 
@@ -16,7 +14,7 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: MAX_AGE,
+    // Pas de maxAge = cookie de session (expire à la fermeture du navigateur)
     path: "/",
   });
 
