@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Users, Stethoscope, ShoppingBag } from "lucide-react";
+import { ExternalLink, Users, Stethoscope, ShoppingBag, Coffee, Smartphone } from "lucide-react";
 
 interface Project {
   title: string;
@@ -43,6 +43,32 @@ const projects: Project[] = [
     accentFrom: "from-blue-400",
     accentTo: "to-violet-500",
     badgeColor: "bg-blue-400/10 text-blue-600 dark:text-blue-300 border-blue-400/20",
+  },
+  {
+    title: "Brûlerie Noire",
+    subtitle: "Site vitrine coffee shop",
+    url: "https://brulerie-noire.saiddev.fr",
+    displayUrl: "brulerie-noire.saiddev.fr",
+    sector: "Restauration · Coffee shop",
+    sectorIcon: <Coffee size={14} aria-hidden="true" />,
+    description: "Site vitrine premium pour un coffee shop parisien spécialisé en torréfaction artisanale. Design sombre élégant, animations Framer Motion, carte complète et formulaire de réservation connecté à Resend pour la réception des demandes par email.",
+    highlights: ["Design dark premium (noir & or)", "Formulaire de réservation Resend", "Animations scroll Framer Motion", "Responsive mobile-first"],
+    accentFrom: "from-amber-500",
+    accentTo: "to-orange-400",
+    badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-300 border-amber-500/20",
+  },
+  {
+    title: "Pomme",
+    subtitle: "E-commerce premium",
+    url: "https://pomme.saiddev.fr",
+    displayUrl: "pomme.saiddev.fr",
+    sector: "E-commerce · Tech",
+    sectorIcon: <Smartphone size={14} aria-hidden="true" />,
+    description: "Site e-commerce premium inspiré du style Apple, avec une identité originale. Catalogue complet de 24 produits (smartphones, laptops, tablettes, montres, audio, accessoires), pages produit détaillées, comparateur et filtres par catégorie.",
+    highlights: ["24 produits sur 7 catégories", "Pages produit avec specs & variantes", "Design minimaliste premium", "37 pages statiques générées"],
+    accentFrom: "from-slate-400",
+    accentTo: "to-blue-500",
+    badgeColor: "bg-slate-400/10 text-slate-600 dark:text-slate-300 border-slate-400/20",
   },
   {
     title: "Young Gold Industry",
@@ -94,7 +120,7 @@ export default function PortfolioSection() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:[&>*:nth-child(4)]:col-start-1 lg:[&>*:nth-child(4)]:col-span-1">
           {projects.map((project, i) => (
             <motion.article
               key={project.url}
