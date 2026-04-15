@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Users, Stethoscope, ShoppingBag, Coffee, Smartphone } from "lucide-react";
+import { ExternalLink, Users, Stethoscope, ShoppingBag, Coffee, Smartphone, Landmark } from "lucide-react";
 
 interface Project {
   title: string;
@@ -69,6 +69,19 @@ const projects: Project[] = [
     accentFrom: "from-slate-400",
     accentTo: "to-blue-500",
     badgeColor: "bg-slate-400/10 text-slate-600 dark:text-slate-300 border-slate-400/20",
+  },
+  {
+    title: "Kaw's Museum",
+    subtitle: "Site vitrine musee",
+    url: "https://kaws-museum.saiddev.fr",
+    displayUrl: "kaws-museum.saiddev.fr",
+    sector: "Culture · Musee",
+    sectorIcon: <Landmark size={14} aria-hidden="true" />,
+    description: "Site vitrine complet pour un musee parisien. 6 pages (accueil, visite, collections, histoire, contact), carte SVG interactive du Carrousel, timeline animee, section transports detaillee, formulaire de contact. Design dark premium or et noir.",
+    highlights: ["Carte SVG interactive du musee", "Timeline historique animee", "Section transports complete", "6 pages avec animations Framer Motion"],
+    accentFrom: "from-yellow-500",
+    accentTo: "to-amber-400",
+    badgeColor: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-300 border-yellow-500/20",
   },
   {
     title: "Young Gold Industry",
