@@ -8,6 +8,12 @@ import MatchHistory from "@/components/satchel/MatchHistory";
 import TopAgents from "@/components/satchel/TopAgents";
 import TopMaps from "@/components/satchel/TopMaps";
 
+function formatPlaytime(secs: number): string {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  return `${h}h ${m}min`;
+}
+
 async function handleSignOut() {
   "use server";
   await signOut({ redirectTo: "/satchel" });
@@ -47,6 +53,9 @@ export default async function DashboardPage() {
             <span className="text-white/40 font-normal text-lg">#{tag}</span>
           </h1>
           <p className="text-white/30 text-xs uppercase tracking-widest mt-1">Mon profil</p>
+          <p className="text-white/30 text-xs mt-1">
+            ⏱ {formatPlaytime(profile.totalPlaytimeSecs)} de jeu
+          </p>
         </div>
         <form action={handleSignOut}>
           <button type="submit" className="text-white/30 hover:text-white text-xs uppercase tracking-widest transition-colors">
@@ -75,7 +84,7 @@ export default async function DashboardPage() {
 
       <section>
         <h2 className="text-xs text-white/40 uppercase tracking-widest mb-3">Derniers matchs</h2>
-        <MatchHistory matches={profile.matches} />
+        <MatchHistory matches={profile.matches} statsByMode={profile.statsByMode} />
       </section>
     </div>
   );

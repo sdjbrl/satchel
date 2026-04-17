@@ -7,6 +7,12 @@ import TopAgents from "@/components/satchel/TopAgents";
 import TopMaps from "@/components/satchel/TopMaps";
 import PlayerSearchBar from "@/components/satchel/PlayerSearchBar";
 
+function formatPlaytime(secs: number): string {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  return `${h}h ${m}min`;
+}
+
 interface Props {
   params: Promise<{ riotId: string }>;
 }
@@ -49,6 +55,9 @@ export default async function PlayerProfilePage({ params }: Props) {
           <span className="text-white/40 font-normal text-lg">#{tag}</span>
         </h1>
         <p className="text-white/30 text-xs uppercase tracking-widest mt-1">Profil public</p>
+        <p className="text-white/30 text-xs mt-1">
+          ⏱ {formatPlaytime(profile.totalPlaytimeSecs)} de jeu
+        </p>
       </div>
 
       <RankCard rank={profile.rank} />
@@ -71,7 +80,7 @@ export default async function PlayerProfilePage({ params }: Props) {
 
       <section>
         <h2 className="text-xs text-white/40 uppercase tracking-widest mb-3">Derniers matchs</h2>
-        <MatchHistory matches={profile.matches} />
+        <MatchHistory matches={profile.matches} statsByMode={profile.statsByMode} />
       </section>
     </div>
   );
