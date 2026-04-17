@@ -67,9 +67,9 @@ export default function SatchelLandingClient({ signInAction }: Props) {
         </span>
       </motion.header>
 
-      <div className="flex-1 grid lg:grid-cols-2 gap-10 px-8 lg:px-16 pb-16 items-center">
+      <div className="flex-1 grid lg:grid-cols-[1.1fr_1fr] xl:grid-cols-[1fr_1fr] gap-12 px-8 lg:px-16 pb-16 items-center">
         {/* LEFT — Hero + login + search */}
-        <div className="flex flex-col gap-10 max-w-xl">
+        <div className="flex flex-col gap-10 w-full max-w-2xl xl:max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -79,14 +79,14 @@ export default function SatchelLandingClient({ signInAction }: Props) {
               <Sparkles className="w-3 h-3" />
               Ton hub Valorant
             </p>
-            <h1 className="text-5xl lg:text-6xl font-extrabold text-white leading-[1.05] tracking-tight">
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.05] tracking-tight">
               Stats, rang,
               <br />
               <span className="text-gradient-red">
                 parties détectées.
               </span>
             </h1>
-            <p className="text-white/50 text-sm mt-4 leading-relaxed max-w-md">
+            <p className="text-white/50 text-sm lg:text-base mt-4 leading-relaxed max-w-lg">
               Connecte ton compte Riot pour voir ton profil complet, ou cherche
               un autre joueur directement.
             </p>
@@ -121,7 +121,7 @@ export default function SatchelLandingClient({ signInAction }: Props) {
           </motion.div>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 text-white/20 text-[10px] uppercase tracking-widest max-w-md">
+          <div className="flex items-center gap-4 text-white/20 text-[10px] uppercase tracking-widest max-w-xl">
             <div className="flex-1 h-px bg-white/10" />
             ou chercher quelqu'un
             <div className="flex-1 h-px bg-white/10" />
@@ -132,13 +132,13 @@ export default function SatchelLandingClient({ signInAction }: Props) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="max-w-md"
+            className="max-w-xl"
           >
             <GlobalSearch size="hero" />
           </motion.div>
 
           {/* Features */}
-          <div className="grid grid-cols-2 gap-3 max-w-md mt-2">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 w-full max-w-3xl mt-2">
             {FEATURES.map(({ Icon, title, desc }, i) => (
               <GlassCard
                 key={title}
@@ -157,7 +157,8 @@ export default function SatchelLandingClient({ signInAction }: Props) {
         </div>
 
         {/* RIGHT — Jett */}
-        <div className="relative hidden lg:flex h-[85vh] items-end justify-center overflow-hidden">
+        {/* RIGHT — Jett */}
+        <div className="relative hidden lg:flex h-[90vh] items-end justify-center overflow-hidden">
           <motion.div
             aria-hidden
             className="absolute inset-0 bg-gradient-to-l from-[#FF4655]/15 via-transparent to-transparent"
@@ -167,7 +168,7 @@ export default function SatchelLandingClient({ signInAction }: Props) {
           />
           <motion.div
             aria-hidden
-            className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-[#FF4655]/25 blur-3xl rounded-full"
+            className="absolute bottom-1/4 right-1/3 w-[28rem] h-[28rem] bg-[#FF4655]/25 blur-3xl rounded-full"
             animate={{ scale: [1, 1.08, 1], opacity: [0.6, 0.9, 0.6] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -177,7 +178,7 @@ export default function SatchelLandingClient({ signInAction }: Props) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="absolute top-16 right-0 flex flex-col gap-2 z-10"
+            className="absolute top-16 right-2 flex flex-col gap-2 z-10"
           >
             {ABILITIES.map((ability, i) => (
               <motion.span
@@ -203,10 +204,10 @@ export default function SatchelLandingClient({ signInAction }: Props) {
             <p className="text-[#FF4655] text-[10px] font-bold tracking-widest uppercase">
               Duelist
             </p>
-            <p className="text-white text-4xl font-extrabold tracking-tight">
+            <p className="text-white text-5xl xl:text-6xl font-extrabold tracking-tight">
               JETT
             </p>
-            <div className="h-0.5 w-10 bg-[#FF4655] mt-2" />
+            <div className="h-0.5 w-12 bg-[#FF4655] mt-2" />
           </motion.div>
 
           {/* Jett */}
@@ -214,7 +215,7 @@ export default function SatchelLandingClient({ signInAction }: Props) {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative w-full h-full max-w-md"
+            className="relative w-full h-full"
           >
             <motion.div
               className="relative w-full h-full"
