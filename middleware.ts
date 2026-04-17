@@ -6,12 +6,21 @@ const COOKIE = "said_auth";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Satchel has its own auth — bypass site password gate entirely
+  if (
+    pathname.startsWith("/satchel") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/satchel")
+  ) {
+    return NextResponse.next();
+  }
+
   // Allow login page and its API
   if (pathname.startsWith("/login") || pathname.startsWith("/api/login")) {
     return NextResponse.next();
   }
 
-  // Check auth cookie
+  // Check site password cookie
   const auth = request.cookies.get(COOKIE)?.value;
   if (auth === PASSWORD) {
     return NextResponse.next();
