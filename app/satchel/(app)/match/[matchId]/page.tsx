@@ -18,6 +18,16 @@ const MODE_LABELS: Record<string, string> = {
   Escalation: "Escalation",
 };
 
+// Colors assigned to parties of 2+ players (avoiding red/blue/green used by teams)
+const PARTY_COLORS = [
+  "bg-yellow-400",
+  "bg-purple-400",
+  "bg-orange-400",
+  "bg-pink-400",
+  "bg-lime-400",
+  "bg-cyan-400",
+];
+
 function formatPlaytime(secs: number): string {
   const h = Math.floor(secs / 3600);
   const m = Math.floor((secs % 3600) / 60);
@@ -29,11 +39,13 @@ function TeamSection({
   color,
   players,
   won,
+  partyColorMap,
 }: {
   title: string;
   color: "blue" | "red";
   players: MatchPlayer[];
   won: boolean;
+  partyColorMap: Record<string, string>;
 }) {
   const sortedPlayers = [...players].sort((a, b) => b.acs - a.acs);
 
@@ -69,6 +81,7 @@ function TeamSection({
       <div className="space-y-0.5">
         {sortedPlayers.map((player) => {
           const kdColor = player.kd >= 1 ? "text-[#FF4655]" : "text-white/30";
+          const partyColor = partyColorMap[player.partyId];
           return (
             <div
               key={`${player.name}#${player.tag}`}
@@ -82,15 +95,23 @@ function TeamSection({
                 className="rounded-full object-cover bg-white/10"
                 unoptimized
               />
-              <Link
-                href={`/satchel/player/${encodeURIComponent(
-                  `${player.name}#${player.tag}`
-                )}`}
-                className="flex-1 text-sm text-white hover:text-[#FF4655] transition-colors truncate min-w-0"
-              >
-                {player.name}
-                <span className="text-white/30">#{player.tag}</span>
-              </Link>
+              <div className="flex-1 flex items-center gap-1.5 min-w-0">
+                {partyColor && (
+                  <span
+                    className={`flex-shrink-0 w-2 h-2 rounded-full ${partyColor}`}
+                    title="En queue ensemble"
+                  />
+                )}
+                <Link
+                  href={`/satchel/player/${encodeURIComponent(
+                    `${player.name}#${player.tag}`
+                  )}`}
+                  className="text-sm text-white hover:text-[#FF4655] transition-colors truncate"
+                >
+                  {player.name}
+                  <span className="text-white/30">#{player.tag}</span>
+                </Link>
+              </div>
               <span className="text-xs text-white/50 w-12 text-right tabular-nums">
                 {player.acs}
               </span>
@@ -122,6 +143,18 @@ export default async function MatchDetailPage({ params }: Props) {
 
   const bluePlayers = match.players.filter((p) => p.team === "blue");
   const redPlayers = match.players.filter((p) => p.team === "red");
+
+  // Build party color map: only parties with 2+ players get a color
+  const partyCounts: Record<string, number> = {};
+  for (const p of match.players) {
+    if (p.partyId) partyCounts[p.partyId] = (partyCounts[p.partyId] || 0) + 1;
+  }
+  const partyColorMap: Record<string, string> = {};
+  Object.entries(partyCounts)
+    .filter(([, count]) => count >= 2)
+    .forEach(([id], i) => {
+      partyColorMap[id] = PARTY_COLORS[i % PARTY_COLORS.length];
+    });
 
   const modeLabel = MODE_LABELS[match.mode] || "Autre";
   const dateStr = new Date(match.startedAt * 1000).toLocaleDateString(
@@ -167,12 +200,14 @@ export default async function MatchDetailPage({ params }: Props) {
           color="blue"
           players={bluePlayers}
           won={match.blueWon}
+          partyColorMap={partyColorMap}
         />
         <TeamSection
           title="Équipe Rouge"
           color="red"
           players={redPlayers}
           won={match.redWon}
+          partyColorMap={partyColorMap}
         />
       </div>
 

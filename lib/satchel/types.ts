@@ -108,6 +108,7 @@ export interface MatchPlayer {
   assists: number;
   kd: number;
   acs: number; // average combat score
+  partyId: string; // players with same partyId are queued together
 }
 
 export interface MatchDetail {

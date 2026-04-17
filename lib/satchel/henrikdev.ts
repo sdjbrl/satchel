@@ -350,6 +350,7 @@ interface HenrikSingleMatch {
       tag: string;
       team: string; // "Blue" or "Red"
       character: string;
+      party_id: string;
       assets: { agent: { full: string } };
       stats: { kills: number; deaths: number; assists: number; score: number };
     }>;
@@ -385,6 +386,7 @@ export async function getMatchDetail(matchId: string): Promise<MatchDetail> {
       assists: p.stats.assists,
       kd,
       acs,
+      partyId: p.party_id ?? "",
     };
   });
 
