@@ -39,7 +39,7 @@ export default function HeroSection() {
         <motion.div variants={itemVariants} className="mb-8 flex justify-center">
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-sm text-sm font-medium text-slate-600 dark:text-slate-300">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
-            Disponible pour de nouveaux projets sur Nice
+            Disponible pour de nouveaux projets partout dans le monde
           </span>
         </motion.div>
 
@@ -57,10 +57,10 @@ export default function HeroSection() {
           variants={itemVariants}
           className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
-          Je suis Saïd, développeur freelance à{" "}
-          <strong className="text-slate-700 dark:text-slate-200 font-medium">Nice</strong>. Je
+          Je suis Saïd, développeur freelance disponible{" "}
+          <strong className="text-slate-700 dark:text-slate-200 font-medium">partout dans le monde</strong>. Je
           conçois des sites web modernes, rapides et pensés pour le{" "}
-          <strong className="text-slate-700 dark:text-slate-200 font-medium">référencement local</strong>{" "}
+          <strong className="text-slate-700 dark:text-slate-200 font-medium">référencement</strong>{" "}
           afin de faire décoller votre activité.
         </motion.p>
 

@@ -25,9 +25,6 @@ export default function SatchelAppLayout({
             <Link href="/satchel/dashboard" className="hover:text-white transition-colors">
               Dashboard
             </Link>
-            <Link href="/satchel/shop" className="hover:text-white transition-colors">
-              Boutique
-            </Link>
             <Link href="/satchel/inventory" className="hover:text-white transition-colors">
               Inventaire
             </Link>

@@ -11,28 +11,25 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Saïd | Création de Sites Web à Nice",
+  title: "Saïd | Création de Sites Web partout dans le monde",
   description:
-    "Développeur web freelance à Nice et sur la Côte d'Azur. Sites web sur-mesure, rapides et optimisés pour le référencement local. Devis gratuit pour artisans, commerçants et TPE.",
+    "Développeur web freelance disponible partout dans le monde. Sites web sur-mesure, rapides et optimisés pour le référencement. Devis gratuit pour artisans, commerçants et TPE.",
   keywords: [
-    "développeur web Nice",
-    "création site web Nice",
-    "freelance web Côte d'Azur",
-    "site internet artisan Nice",
-    "référencement local Nice",
-    "agence web PACA",
-    "Alpes-Maritimes",
+    "développeur web freelance",
+    "création site web",
+    "freelance web international",
+    "site internet artisan",
     "site web TPE PME",
-    "Next.js freelance Nice",
+    "Next.js freelance",
   ],
   authors: [{ name: "Saïd AHMED MOUSSA" }],
   openGraph: {
-    title: "Saïd | Création de Sites Web à Nice",
+    title: "Saïd | Création de Sites Web partout dans le monde",
     description:
-      "Sites web sur-mesure, ultra-rapides et optimisés pour la conversion. Basé à Nice, je travaille avec les artisans, commerçants et TPE de la Côte d'Azur.",
+      "Sites web sur-mesure, ultra-rapides et optimisés pour la conversion. Disponible partout dans le monde pour les artisans, commerçants et TPE.",
     locale: "fr_FR",
     type: "website",
-    siteName: "Saïd Web — Développeur Freelance Nice",
+    siteName: "Saïd Web — Développeur Freelance",
   },
   robots: {
     index: true,
@@ -60,14 +57,12 @@ export default function RootLayout({
               "@type": "LocalBusiness",
               name: "Saïd AHMED MOUSSA — Développeur Web Freelance",
               description:
-                "Création de sites web sur-mesure pour artisans, commerçants et TPE à Nice et sur la Côte d'Azur.",
+                "Création de sites web sur-mesure pour artisans, commerçants et TPE partout dans le monde.",
               address: {
                 "@type": "PostalAddress",
-                addressLocality: "Nice",
-                addressRegion: "Alpes-Maritimes",
                 addressCountry: "FR",
               },
-              areaServed: ["Nice", "Côte d'Azur", "PACA", "Alpes-Maritimes"],
+              areaServed: "Partout dans le monde",
               email: "pro.saidahmed@yahoo.com",
               priceRange: "Sur devis",
             }),
