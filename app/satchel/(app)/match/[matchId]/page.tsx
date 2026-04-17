@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft, Clock3, Swords, Users } from "lucide-react";
 import { getMatchDetail } from "@/lib/satchel/henrikdev";
 import type { MatchDetail, MatchPlayer } from "@/lib/satchel/types";
+import PageTransition from "@/components/satchel/ui/PageTransition";
 
 interface Props {
   params: Promise<{ matchId: string }>;
@@ -18,7 +20,6 @@ const MODE_LABELS: Record<string, string> = {
   Escalation: "Escalation",
 };
 
-// Colors assigned to parties of 2+ players (avoiding red/blue/green used by teams)
 const PARTY_COLORS = [
   "bg-yellow-400",
   "bg-purple-400",
@@ -29,9 +30,10 @@ const PARTY_COLORS = [
 ];
 
 function formatPlaytime(secs: number): string {
+  if (secs <= 0) return "—";
   const h = Math.floor(secs / 3600);
   const m = Math.floor((secs % 3600) / 60);
-  return `${h}h ${m}min`;
+  return h > 0 ? `${h}h ${m}min` : `${m}min`;
 }
 
 function TeamSection({
@@ -48,23 +50,22 @@ function TeamSection({
   partyColorMap: Record<string, string>;
 }) {
   const sortedPlayers = [...players].sort((a, b) => b.acs - a.acs);
+  const accent = color === "blue" ? "text-blue-400" : "text-red-400";
+  const border = color === "blue" ? "border-blue-500/30" : "border-red-500/30";
 
   return (
-    <div className="bg-white/5 rounded-lg p-4">
+    <div className="glass-card p-4">
       <div
-        className={`flex items-center justify-between mb-2 pb-2 border-b ${
-          color === "blue" ? "border-blue-500/30" : "border-red-500/30"
-        }`}
+        className={`flex items-center justify-between mb-3 pb-2 border-b ${border}`}
       >
         <h2
-          className={`text-xs font-bold uppercase tracking-widest ${
-            color === "blue" ? "text-blue-400" : "text-red-400"
-          }`}
+          className={`text-xs font-bold uppercase tracking-widest ${accent} flex items-center gap-2`}
         >
+          <Users className="w-3 h-3" />
           {title}
         </h2>
         {won && (
-          <span className="text-[10px] bg-white/10 text-white/60 px-2 py-0.5 rounded uppercase tracking-widest">
+          <span className="text-[10px] bg-[#FF4655]/10 border border-[#FF4655]/30 text-[#FF4655] px-2 py-0.5 rounded uppercase tracking-widest font-bold">
             Victoire
           </span>
         )}
@@ -92,7 +93,7 @@ function TeamSection({
                 alt={player.agent}
                 width={32}
                 height={32}
-                className="rounded-full object-cover bg-white/10"
+                className="rounded-full object-cover bg-white/10 ring-1 ring-white/10"
                 unoptimized
               />
               <div className="flex-1 flex items-center gap-1.5 min-w-0">
@@ -104,7 +105,7 @@ function TeamSection({
                 )}
                 <Link
                   href={`/satchel/player/${encodeURIComponent(
-                    `${player.name}#${player.tag}`
+                    `${player.name}#${player.tag}`,
                   )}`}
                   className="text-sm text-white hover:text-[#FF4655] transition-colors truncate"
                 >
@@ -144,7 +145,6 @@ export default async function MatchDetailPage({ params }: Props) {
   const bluePlayers = match.players.filter((p) => p.team === "blue");
   const redPlayers = match.players.filter((p) => p.team === "red");
 
-  // Build party color map: only parties with 2+ players get a color
   const partyCounts: Record<string, number> = {};
   for (const p of match.players) {
     if (p.partyId) partyCounts[p.partyId] = (partyCounts[p.partyId] || 0) + 1;
@@ -156,65 +156,83 @@ export default async function MatchDetailPage({ params }: Props) {
       partyColorMap[id] = PARTY_COLORS[i % PARTY_COLORS.length];
     });
 
-  const modeLabel = MODE_LABELS[match.mode] || "Autre";
-  const dateStr = new Date(match.startedAt * 1000).toLocaleDateString(
-    "fr-FR",
-    {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    }
-  );
+  const modeLabel = MODE_LABELS[match.mode] || match.mode || "Autre";
+  const dateStr = new Date(match.startedAt * 1000).toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 
   const blueScoreStyle = match.blueWon
-    ? "text-white font-bold"
+    ? "text-white font-extrabold"
     : "text-white/40";
-  const redScoreStyle = match.redWon ? "text-white font-bold" : "text-white/40";
+  const redScoreStyle = match.redWon
+    ? "text-white font-extrabold"
+    : "text-white/40";
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Link
-        href="/satchel"
-        className="inline-block text-white/40 hover:text-white text-xs uppercase tracking-widest transition-colors"
-      >
-        ← Retour
-      </Link>
+    <PageTransition>
+      <div className="max-w-5xl mx-auto space-y-6">
+        <Link
+          href="/satchel/dashboard"
+          className="inline-flex items-center gap-2 text-white/40 hover:text-white text-xs uppercase tracking-widest transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Retour
+        </Link>
 
-      <div className="bg-white/5 rounded-lg p-6 space-y-2">
-        <h1 className="text-2xl font-bold text-white">{match.map}</h1>
-        <p className="text-white/60 text-sm">
-          {modeLabel} · {dateStr}
-        </p>
-        <div className="flex items-center gap-3 text-lg">
-          <span className="text-blue-400 font-semibold">BLEU</span>
-          <span className={blueScoreStyle}>{match.blueScore}</span>
-          <span className="text-white/40">–</span>
-          <span className={redScoreStyle}>{match.redScore}</span>
-          <span className="text-red-400 font-semibold">ROUGE</span>
+        <div className="glass-card-red p-6 relative overflow-hidden">
+          <div
+            aria-hidden
+            className="absolute -right-20 -top-20 w-60 h-60 bg-[#FF4655]/15 blur-3xl rounded-full"
+          />
+          <div className="relative z-10">
+            <p className="text-[#FF4655] text-[10px] uppercase tracking-[0.4em] font-bold mb-1 flex items-center gap-2">
+              <Swords className="w-3 h-3" />
+              {modeLabel}
+            </p>
+            <h1 className="text-4xl font-extrabold text-white tracking-tight">
+              {match.map}
+            </h1>
+            <p className="text-white/40 text-xs mt-1">{dateStr}</p>
+
+            <div className="flex items-center gap-4 text-3xl mt-5 font-mono tabular-nums">
+              <span className="text-blue-400 text-sm font-bold uppercase tracking-widest">
+                Bleu
+              </span>
+              <span className={blueScoreStyle}>{match.blueScore}</span>
+              <span className="text-white/20">–</span>
+              <span className={redScoreStyle}>{match.redScore}</span>
+              <span className="text-red-400 text-sm font-bold uppercase tracking-widest">
+                Rouge
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TeamSection
-          title="Équipe Bleue"
-          color="blue"
-          players={bluePlayers}
-          won={match.blueWon}
-          partyColorMap={partyColorMap}
-        />
-        <TeamSection
-          title="Équipe Rouge"
-          color="red"
-          players={redPlayers}
-          won={match.redWon}
-          partyColorMap={partyColorMap}
-        />
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TeamSection
+            title="Équipe Bleue"
+            color="blue"
+            players={bluePlayers}
+            won={match.blueWon}
+            partyColorMap={partyColorMap}
+          />
+          <TeamSection
+            title="Équipe Rouge"
+            color="red"
+            players={redPlayers}
+            won={match.redWon}
+            partyColorMap={partyColorMap}
+          />
+        </div>
 
-      <p className="text-white/20 text-xs text-center">
-        ⏱ {formatPlaytime(match.gameLengthSecs)} · {match.players.length}{" "}
-        joueurs
-      </p>
-    </div>
+        <p className="text-white/30 text-xs text-center flex items-center gap-3 justify-center">
+          <Clock3 className="w-3 h-3" /> {formatPlaytime(match.gameLengthSecs)}
+          <span className="text-white/15">·</span>
+          <Users className="w-3 h-3" /> {match.players.length} joueurs
+        </p>
+      </div>
+    </PageTransition>
   );
 }

@@ -14,7 +14,7 @@ export default function SatchelRootLayout({
 }) {
   return (
     // Override the root layout's theme — Satchel always dark
-    <div className="min-h-screen bg-[#0d1117] text-[#e0e0e0] font-sans">
+    <div className="min-h-screen valorant-bg text-[#e0e0e0] font-sans antialiased">
       {children}
     </div>
   );
