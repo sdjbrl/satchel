@@ -125,8 +125,8 @@ function mapMatch(
     won: teamData.has_won,
     teamScore: `${teamData.rounds_won} – ${opponentTeam.rounds_won}`,
     startedAt: raw.metadata.game_start,
-    mode: raw.metadata.mode,
-    gameLengthSecs: raw.metadata.game_length,
+    mode: raw.metadata.mode || "Unknown",
+    gameLengthSecs: raw.metadata.game_length || 0,
   };
 }
 
@@ -193,8 +193,9 @@ function deriveTopMaps(matches: MatchResult[]): MapStat[] {
 function deriveStatsByMode(matches: MatchResult[]): Record<string, PlayerStats> {
   const modeGroups: Record<string, MatchResult[]> = {};
   for (const m of matches) {
-    if (!modeGroups[m.mode]) modeGroups[m.mode] = [];
-    modeGroups[m.mode].push(m);
+    const mode = m.mode || "Unknown";
+    if (!modeGroups[mode]) modeGroups[mode] = [];
+    modeGroups[mode].push(m);
   }
   const result: Record<string, PlayerStats> = {};
   for (const [mode, modeMatches] of Object.entries(modeGroups)) {
@@ -222,7 +223,7 @@ export async function getPlayerProfile(
     .map((m) => mapMatch(m, name, tag))
     .filter((m): m is MatchResult => m !== null);
 
-  const totalPlaytimeSecs = matches.reduce((s, m) => s + m.gameLengthSecs, 0);
+  const totalPlaytimeSecs = matches.reduce((s, m) => s + (m.gameLengthSecs || 0), 0);
 
   return {
     player: { name, tag, region },
