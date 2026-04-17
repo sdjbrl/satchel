@@ -71,11 +71,11 @@ function TeamSection({
           const kdColor = player.kd >= 1 ? "text-[#FF4655]" : "text-white/30";
           return (
             <div
-              key={`${player.name}-${player.tag}`}
+              key={`${player.name}#${player.tag}`}
               className="flex items-center gap-3 py-2 px-3 rounded-md hover:bg-white/5 transition-colors"
             >
               <Image
-                src={player.agentImage}
+                src={player.agentImage || "/globe.svg"}
                 alt={player.agent}
                 width={32}
                 height={32}
@@ -136,9 +136,7 @@ export default async function MatchDetailPage({ params }: Props) {
   const blueScoreStyle = match.blueWon
     ? "text-white font-bold"
     : "text-white/40";
-  const redScoreStyle = !match.blueWon
-    ? "text-white font-bold"
-    : "text-white/40";
+  const redScoreStyle = match.redWon ? "text-white font-bold" : "text-white/40";
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -174,7 +172,7 @@ export default async function MatchDetailPage({ params }: Props) {
           title="Équipe Rouge"
           color="red"
           players={redPlayers}
-          won={!match.blueWon}
+          won={match.redWon}
         />
       </div>
 

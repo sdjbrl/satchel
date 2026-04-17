@@ -117,6 +117,7 @@ export interface MatchDetail {
   startedAt: number;
   gameLengthSecs: number;
   blueWon: boolean;
+  redWon: boolean;
   blueScore: number;
   redScore: number;
   players: MatchPlayer[];
