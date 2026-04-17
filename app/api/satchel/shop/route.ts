@@ -6,13 +6,12 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const name = session.user.name ?? "";
+  const name = session.user.name;
   const tag = session.user.tag;
   const accessToken = session.accessToken;
 
-  if (!accessToken) {
-    return NextResponse.json({ error: "No access token in session" }, { status: 401 });
-  }
+  if (!name) return NextResponse.json({ error: "Missing player name in session" }, { status: 401 });
+  if (!accessToken) return NextResponse.json({ error: "No access token in session" }, { status: 401 });
 
   try {
     const shop = await getPlayerShop("eu", name, tag, accessToken);

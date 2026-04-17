@@ -6,10 +6,16 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = req.nextUrl;
   const name = searchParams.get("name");
   const tag = searchParams.get("tag");
-  const region = (searchParams.get("region") ?? "eu") as "eu" | "na" | "ap" | "kr";
+
+  const VALID_REGIONS = ["eu", "na", "ap", "kr"] as const;
+  type Region = (typeof VALID_REGIONS)[number];
+  const rawRegion = searchParams.get("region") ?? "eu";
+  const region: Region = (VALID_REGIONS as readonly string[]).includes(rawRegion)
+    ? (rawRegion as Region)
+    : "eu";
 
   if (!name || !tag) {
     return NextResponse.json({ error: "Missing name or tag" }, { status: 400 });
