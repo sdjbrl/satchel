@@ -214,7 +214,7 @@ export async function getPlayerProfile(
   const [rankRaw, matchesRaw] = await Promise.all([
     hFetch<HenrikMMRData>(`/v2/mmr/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`),
     hFetch<HenrikMatch[]>(
-      `/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=20`
+      `/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=50`
     ),
   ]);
 
@@ -229,7 +229,7 @@ export async function getPlayerProfile(
     player: { name, tag, region },
     rank,
     stats: deriveStats(matches),
-    matches: matches.slice(0, 15),
+    matches: matches,
     topAgents: deriveTopAgents(matches),
     topMaps: deriveTopMaps(matches),
     totalPlaytimeSecs,
