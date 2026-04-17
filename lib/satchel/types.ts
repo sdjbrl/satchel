@@ -35,6 +35,8 @@ export interface MatchResult {
   won: boolean;
   teamScore: string; // e.g. "13 – 7"
   startedAt: number; // unix timestamp
+  mode: string; // e.g. "Competitive", "Unranked", "Swiftplay", "Deathmatch", "Hurm"
+  gameLengthSecs: number; // match duration in seconds
 }
 
 export interface AgentStat {
@@ -59,6 +61,8 @@ export interface PlayerProfile {
   matches: MatchResult[];
   topAgents: AgentStat[];
   topMaps: MapStat[];
+  totalPlaytimeSecs: number; // sum of all gameLengthSecs
+  statsByMode: Record<string, PlayerStats>; // keyed by mode name
 }
 
 export interface ShopOffer {
@@ -91,4 +95,29 @@ export interface PlayerInventory {
 export interface ShopData {
   offers: ShopOffer[];
   resetInSeconds: number;
+}
+
+export interface MatchPlayer {
+  name: string;
+  tag: string;
+  agent: string;
+  agentImage: string;
+  team: "blue" | "red";
+  kills: number;
+  deaths: number;
+  assists: number;
+  kd: number;
+  acs: number; // average combat score
+}
+
+export interface MatchDetail {
+  matchId: string;
+  map: string;
+  mode: string;
+  startedAt: number;
+  gameLengthSecs: number;
+  blueWon: boolean;
+  blueScore: number;
+  redScore: number;
+  players: MatchPlayer[];
 }

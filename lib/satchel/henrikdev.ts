@@ -13,6 +13,8 @@ import type {
   ShopData,
   ShopOffer,
   PlayerInventory,
+  MatchDetail,
+  MatchPlayer,
 } from "./types";
 
 const BASE = "https://api.henrikdev.xyz/valorant";
@@ -77,7 +79,13 @@ interface HenrikMatchPlayer {
 }
 
 interface HenrikMatch {
-  metadata: { map: string; matchid: string; game_start: number };
+  metadata: {
+    map: string;
+    matchid: string;
+    game_start: number;
+    mode: string;
+    game_length: number;
+  };
   players: { all_players: HenrikMatchPlayer[] };
   teams: {
     blue: { has_won: boolean; rounds_won: number; rounds_lost: number };
@@ -117,6 +125,8 @@ function mapMatch(
     won: teamData.has_won,
     teamScore: `${teamData.rounds_won} – ${opponentTeam.rounds_won}`,
     startedAt: raw.metadata.game_start,
+    mode: raw.metadata.mode,
+    gameLengthSecs: raw.metadata.game_length,
   };
 }
 
@@ -180,6 +190,19 @@ function deriveTopMaps(matches: MatchResult[]): MapStat[] {
     .slice(0, 5);
 }
 
+function deriveStatsByMode(matches: MatchResult[]): Record<string, PlayerStats> {
+  const modeGroups: Record<string, MatchResult[]> = {};
+  for (const m of matches) {
+    if (!modeGroups[m.mode]) modeGroups[m.mode] = [];
+    modeGroups[m.mode].push(m);
+  }
+  const result: Record<string, PlayerStats> = {};
+  for (const [mode, modeMatches] of Object.entries(modeGroups)) {
+    result[mode] = deriveStats(modeMatches);
+  }
+  return result;
+}
+
 // ---------- Public API ----------
 
 export async function getPlayerProfile(
@@ -199,6 +222,8 @@ export async function getPlayerProfile(
     .map((m) => mapMatch(m, name, tag))
     .filter((m): m is MatchResult => m !== null);
 
+  const totalPlaytimeSecs = matches.reduce((s, m) => s + m.gameLengthSecs, 0);
+
   return {
     player: { name, tag, region },
     rank,
@@ -206,6 +231,8 @@ export async function getPlayerProfile(
     matches: matches.slice(0, 15),
     topAgents: deriveTopAgents(matches),
     topMaps: deriveTopMaps(matches),
+    totalPlaytimeSecs,
+    statsByMode: deriveStatsByMode(matches),
   };
 }
 
@@ -313,5 +340,72 @@ export async function getPlayerInventory(
       imageUrl: s.icon,
       equipped: false, // HenrikDev doesn't expose equipped state; leave false
     })),
+  };
+}
+
+// ---------- Match Detail ----------
+
+interface HenrikSingleMatch {
+  metadata: {
+    matchid: string;
+    map: string;
+    mode: string;
+    game_start: number;
+    game_length: number;
+  };
+  players: {
+    all_players: Array<{
+      name: string;
+      tag: string;
+      team: string; // "Blue" or "Red"
+      character: string;
+      assets: { agent: { full: string } };
+      stats: { kills: number; deaths: number; assists: number; score: number };
+    }>;
+  };
+  teams: {
+    blue: { has_won: boolean; rounds_won: number };
+    red: { has_won: boolean; rounds_won: number };
+  };
+}
+
+export async function getMatchDetail(matchId: string): Promise<MatchDetail> {
+  const raw = await hFetch<HenrikSingleMatch>(`/v2/match/${matchId}`);
+
+  const blueScore = raw.teams.blue.rounds_won;
+  const redScore = raw.teams.red.rounds_won;
+  const totalRounds = blueScore + redScore || 1;
+
+  const players: MatchPlayer[] = raw.players.all_players.map((p) => {
+    const kd =
+      p.stats.deaths === 0
+        ? p.stats.kills
+        : +(p.stats.kills / p.stats.deaths).toFixed(2);
+    const acs = Math.round(p.stats.score / totalRounds);
+
+    return {
+      name: p.name,
+      tag: p.tag,
+      agent: p.character,
+      agentImage: p.assets.agent.full,
+      team: p.team.toLowerCase() as "blue" | "red",
+      kills: p.stats.kills,
+      deaths: p.stats.deaths,
+      assists: p.stats.assists,
+      kd,
+      acs,
+    };
+  });
+
+  return {
+    matchId: raw.metadata.matchid,
+    map: raw.metadata.map,
+    mode: raw.metadata.mode,
+    startedAt: raw.metadata.game_start,
+    gameLengthSecs: raw.metadata.game_length,
+    blueWon: raw.teams.blue.has_won,
+    blueScore,
+    redScore,
+    players,
   };
 }
