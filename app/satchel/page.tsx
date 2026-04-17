@@ -8,12 +8,11 @@ const JETT_IMAGE =
 
 export default async function SatchelLandingPage() {
   const session = await auth();
-  // Already logged in — skip landing
   if (session) redirect("/satchel/dashboard");
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* LEFT — Login + Search */}
+      {/* LEFT — Login */}
       <div className="flex-1 flex flex-col justify-center px-10 lg:px-20 gap-8">
         <div>
           <p className="text-[#FF4655] text-xs font-bold tracking-[0.4em] uppercase mb-3">
@@ -24,26 +23,30 @@ export default async function SatchelLandingPage() {
             <span className="text-[#FF4655]">Valorant.</span>
           </h1>
           <p className="text-white/40 text-sm mt-3">
-            Stats · Boutique quotidienne · Inventaire
+            Stats · Rang · Inventaire
           </p>
         </div>
 
-        {/* Riot Sign On button */}
-        <form
-          action={async () => {
-            "use server";
-            await signIn("riot", { redirectTo: "/satchel/dashboard" });
-          }}
-        >
-          <button
-            type="submit"
-            className="flex items-center gap-3 bg-[#FF4655] hover:bg-[#e03d4a] transition-colors text-white font-bold text-sm uppercase tracking-widest px-6 py-4 rounded-md w-fit"
+        <div className="space-y-3">
+          <form
+            action={async () => {
+              "use server";
+              await signIn("riot", { redirectTo: "/satchel/dashboard" });
+            }}
           >
-            {/* Riot icon placeholder — replace with official Riot logo SVG */}
-            <span className="text-lg">⚡</span>
-            Se connecter avec Riot Games
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="flex items-center gap-3 bg-[#FF4655] hover:bg-[#e03d4a] transition-colors text-white font-bold text-sm uppercase tracking-widest px-6 py-4 rounded-md w-fit"
+            >
+              <span className="text-lg">⚡</span>
+              Se connecter avec Riot Games
+            </button>
+          </form>
+          <p className="text-white/20 text-xs max-w-xs leading-relaxed">
+            Connexion sécurisée via Riot SSO. Satchel n'accède qu'aux données
+            de ton propre compte, avec ton consentement explicite.
+          </p>
+        </div>
 
         {/* Divider */}
         <div className="flex items-center gap-4 text-white/20 text-xs uppercase tracking-widest max-w-sm">
@@ -63,11 +66,9 @@ export default async function SatchelLandingPage() {
 
       {/* RIGHT — Jett full-height */}
       <div className="relative hidden lg:flex w-1/2 items-end justify-center overflow-hidden">
-        {/* Background glow */}
         <div className="absolute inset-0 bg-gradient-to-l from-[#FF4655]/10 to-transparent" />
         <div className="absolute bottom-0 right-1/4 w-64 h-96 bg-[#FF4655]/20 blur-3xl rounded-full" />
 
-        {/* Ability tags */}
         <div className="absolute top-16 right-12 flex flex-col gap-3 z-10">
           {["UPDRAFT", "CLOUDBURST", "BLADESTORM"].map((ability) => (
             <span
@@ -79,7 +80,6 @@ export default async function SatchelLandingPage() {
           ))}
         </div>
 
-        {/* Jett image */}
         <div className="relative w-full h-full max-w-md">
           <Image
             src={JETT_IMAGE}

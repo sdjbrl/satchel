@@ -38,13 +38,11 @@ export default async function PlayerProfilePage({ params }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Search bar at top */}
       <div>
         <p className="text-xs text-white/40 uppercase tracking-widest mb-2">Rechercher un joueur</p>
         <PlayerSearchBar />
       </div>
 
-      {/* Player header */}
       <div>
         <h1 className="text-2xl font-bold text-white">
           {name}
