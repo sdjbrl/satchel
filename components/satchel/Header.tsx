@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, LogOut, Package, Zap } from "lucide-react";
+import { BarChart3, LayoutDashboard, LogOut, Package, Trophy, Zap } from "lucide-react";
 import { type ReactNode } from "react";
 import GlobalSearch from "@/components/satchel/GlobalSearch";
 
@@ -15,6 +15,8 @@ interface Props {
 
 const NAV = [
   { href: "/satchel/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { href: "/satchel/stats", label: "Stats", Icon: BarChart3 },
+  { href: "/satchel/leaderboard", label: "Leaderboard", Icon: Trophy },
   { href: "/satchel/inventory", label: "Inventaire", Icon: Package },
 ];
 

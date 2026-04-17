@@ -5,6 +5,8 @@ import { ArrowLeft, Clock3, Swords, Users } from "lucide-react";
 import { getMatchDetail } from "@/lib/satchel/henrikdev";
 import type { MatchDetail, MatchPlayer } from "@/lib/satchel/types";
 import PageTransition from "@/components/satchel/ui/PageTransition";
+import RoundTimeline from "@/components/satchel/RoundTimeline";
+import EconomyChart from "@/components/satchel/EconomyChart";
 
 interface Props {
   params: Promise<{ matchId: string }>;
@@ -75,8 +77,10 @@ function TeamSection({
         <div className="w-8" />
         <div className="flex-1">Joueur</div>
         <div className="w-12 text-right">ACS</div>
-        <div className="w-24 text-center">K/D/A</div>
+        <div className="w-20 text-center">K/D/A</div>
         <div className="w-10 text-right">KD</div>
+        <div className="w-10 text-right hidden sm:block">HS%</div>
+        <div className="w-12 text-right hidden md:block">DMG</div>
       </div>
 
       <div className="space-y-0.5">
@@ -116,13 +120,19 @@ function TeamSection({
               <span className="text-xs text-white/50 w-12 text-right tabular-nums">
                 {player.acs}
               </span>
-              <span className="text-sm font-mono text-white/80 tabular-nums w-24 text-center">
+              <span className="text-sm font-mono text-white/80 tabular-nums w-20 text-center">
                 {player.kills}/{player.deaths}/{player.assists}
               </span>
               <span
                 className={`w-10 text-right text-xs font-bold tabular-nums ${kdColor}`}
               >
                 {player.kd.toFixed(2)}
+              </span>
+              <span className="w-10 text-right text-xs text-white/50 tabular-nums hidden sm:block">
+                {player.headshotPct}%
+              </span>
+              <span className="w-12 text-right text-xs text-white/50 tabular-nums hidden md:block">
+                {player.damage}
               </span>
             </div>
           );
@@ -226,6 +236,13 @@ export default async function MatchDetailPage({ params }: Props) {
             partyColorMap={partyColorMap}
           />
         </div>
+
+        {match.rounds.length > 0 && (
+          <>
+            <RoundTimeline rounds={match.rounds} />
+            <EconomyChart rounds={match.rounds} />
+          </>
+        )}
 
         <p className="text-white/30 text-xs text-center flex items-center gap-3 justify-center">
           <Clock3 className="w-3 h-3" /> {formatPlaytime(match.gameLengthSecs)}

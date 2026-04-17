@@ -21,6 +21,9 @@ export interface PlayerStats {
   headshotPct: number; // 0–100
   damagePerRound: number;
   matchesPlayed: number;
+  acs: number; // average combat score
+  wins: number;
+  losses: number;
 }
 
 export interface MatchResult {
@@ -37,6 +40,9 @@ export interface MatchResult {
   startedAt: number; // unix timestamp
   mode: string; // e.g. "Competitive", "Unranked", "Swiftplay", "Deathmatch", "Hurm"
   gameLengthSecs: number; // match duration in seconds
+  acs: number;
+  headshotPct: number;
+  damagePerRound: number;
 }
 
 export interface AgentStat {
@@ -46,12 +52,16 @@ export interface AgentStat {
   winrate: number; // 0–100
   kd: number;
   avgKills: number;
+  acs: number;
+  headshotPct: number;
 }
 
 export interface MapStat {
   map: string;
   matches: number;
   winrate: number; // 0–100
+  avgKills: number;
+  avgAcs: number;
 }
 
 export interface PlayerProfile {
@@ -63,6 +73,8 @@ export interface PlayerProfile {
   topMaps: MapStat[];
   totalPlaytimeSecs: number; // sum of all gameLengthSecs
   statsByMode: Record<string, PlayerStats>; // keyed by mode name
+  statsByAgent: AgentStat[]; // full breakdown, sorted by matches desc
+  statsByMap: MapStat[]; // full breakdown, sorted by matches desc
 }
 
 export interface ShopOffer {
@@ -108,7 +120,21 @@ export interface MatchPlayer {
   assists: number;
   kd: number;
   acs: number; // average combat score
+  headshotPct: number;
+  damage: number;
+  bodyshotPct: number;
+  legshotPct: number;
   partyId: string; // players with same partyId are queued together
+}
+
+export interface RoundInfo {
+  round: number;
+  winningTeam: "blue" | "red";
+  endType: "elimination" | "defuse" | "detonate" | "time";
+  bluePlantedSpike: boolean;
+  redPlantedSpike: boolean;
+  blueEconomy: number; // sum of loadout value, mocked if missing
+  redEconomy: number;
 }
 
 export interface MatchDetail {
@@ -122,4 +148,31 @@ export interface MatchDetail {
   blueScore: number;
   redScore: number;
   players: MatchPlayer[];
+  rounds: RoundInfo[];
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  puuid: string;
+  name: string;
+  tag: string;
+  tier: number;
+  tierName: string;
+  rr: number;
+  wins: number;
+}
+
+export interface LeaderboardData {
+  region: string;
+  totalPlayers: number;
+  entries: LeaderboardEntry[];
+}
+
+export interface CoachInsight {
+  /** "positive" = compliment, "neutral" = observation, "negative" = area to work on */
+  severity: "positive" | "neutral" | "negative";
+  title: string;
+  body: string;
+  /** Optional metric surface, e.g. "HS 18%" */
+  metric?: string;
 }

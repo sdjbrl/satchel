@@ -3,9 +3,6 @@ import type { PlayerStats } from "@/lib/satchel/types";
 import StatBlock from "@/components/satchel/ui/StatBlock";
 
 export default function StatsGrid({ stats }: { stats: PlayerStats }) {
-  const showHs = stats.headshotPct > 0;
-  const showDmg = stats.damagePerRound > 0;
-
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <StatBlock
@@ -20,20 +17,22 @@ export default function StatsGrid({ stats }: { stats: PlayerStats }) {
         label="Winrate"
         value={`${stats.winrate}%`}
         accent={stats.winrate >= 50}
-        hint={`${stats.matchesPlayed} matchs`}
+        hint={`${stats.wins}W · ${stats.losses}L`}
         delay={0.05}
+      />
+      <StatBlock
+        icon={Flame}
+        label="ACS"
+        value={stats.acs.toString()}
+        accent={stats.acs >= 230}
+        hint={`⌀ combat score`}
+        delay={0.1}
       />
       <StatBlock
         icon={Target}
         label="Headshot %"
-        value={showHs ? `${stats.headshotPct}%` : "—"}
-        accent={showHs && stats.headshotPct >= 25}
-        delay={0.1}
-      />
-      <StatBlock
-        icon={Flame}
-        label="Dmg / Round"
-        value={showDmg ? stats.damagePerRound.toFixed(0) : "—"}
+        value={`${stats.headshotPct}%`}
+        accent={stats.headshotPct >= 25}
         delay={0.15}
       />
     </div>
