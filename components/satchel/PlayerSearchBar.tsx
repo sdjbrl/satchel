@@ -26,7 +26,8 @@ export default function PlayerSearchBar() {
       />
       <button
         type="submit"
-        disabled={!value.includes("#")}
+        disabled={!value.trim().includes("#")}
+        aria-label="Rechercher le joueur"
         className="bg-white/10 hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm px-4 py-3 rounded-md transition-colors"
       >
         →
