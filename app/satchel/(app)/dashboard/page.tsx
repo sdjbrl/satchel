@@ -1,11 +1,17 @@
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/satchel/auth-config";
 import { getPlayerProfile } from "@/lib/satchel/henrikdev";
+import type { PlayerProfile } from "@/lib/satchel/types";
 import RankCard from "@/components/satchel/RankCard";
 import StatsGrid from "@/components/satchel/StatsGrid";
 import MatchHistory from "@/components/satchel/MatchHistory";
 import TopAgents from "@/components/satchel/TopAgents";
 import TopMaps from "@/components/satchel/TopMaps";
+
+async function handleSignOut() {
+  "use server";
+  await signOut({ redirectTo: "/satchel" });
+}
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -14,15 +20,17 @@ export default async function DashboardPage() {
   const name = session.user.name ?? "";
   const tag = session.user.tag;
 
-  let profile;
+  let profile: PlayerProfile;
   try {
     profile = await getPlayerProfile("eu", name, tag);
   } catch {
     // Profile fetch failed — show error state
     return (
       <div className="text-center py-20">
-        <p className="text-white/40">Impossible de charger tes stats. Réessaie plus tard.</p>
-        <form action={async () => { "use server"; await signOut({ redirectTo: "/satchel" }); }}>
+        <p className="text-white/40">
+          Impossible de charger les stats de <strong>{name}#{tag}</strong>. Réessaie plus tard.
+        </p>
+        <form action={handleSignOut}>
           <button type="submit" className="mt-4 text-[#FF4655] text-sm underline">Se déconnecter</button>
         </form>
       </div>
@@ -40,7 +48,7 @@ export default async function DashboardPage() {
           </h1>
           <p className="text-white/30 text-xs uppercase tracking-widest mt-1">Mon profil</p>
         </div>
-        <form action={async () => { "use server"; await signOut({ redirectTo: "/satchel" }); }}>
+        <form action={handleSignOut}>
           <button type="submit" className="text-white/30 hover:text-white text-xs uppercase tracking-widest transition-colors">
             Déconnexion
           </button>
