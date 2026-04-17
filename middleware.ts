@@ -5,6 +5,17 @@ const COOKIE = "said_auth";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get("host") ?? "";
+
+  // satchel.saiddev.fr subdomain → rewrite every path under /satchel/*
+  if (host.startsWith("satchel.")) {
+    const url = request.nextUrl.clone();
+    if (!pathname.startsWith("/satchel")) {
+      url.pathname = pathname === "/" ? "/satchel" : `/satchel${pathname}`;
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  }
 
   // Satchel has its own auth — bypass site password gate entirely
   if (
