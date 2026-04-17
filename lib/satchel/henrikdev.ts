@@ -67,66 +67,48 @@ function mapRank(raw: HenrikMMRData): RankData {
   };
 }
 
-// ---------- Matches ----------
+// ---------- Matches (v1/lifetime endpoint) ----------
 
-interface HenrikMatchPlayer {
-  name: string;
-  tag: string;
-  team: string;
-  character: string;
-  assets: { agent: { bust: string; full: string } };
-  stats: { kills: number; deaths: number; assists: number };
-}
-
-interface HenrikMatch {
-  metadata: {
-    map: string;
-    matchid: string;
-    game_start: number;
+interface HenrikLifetimeMatch {
+  meta: {
+    id: string;
+    map: { name: string };
     mode: string;
-    game_length: number;
+    started_at: string;
   };
-  players: { all_players: HenrikMatchPlayer[] };
-  teams: {
-    blue: { has_won: boolean; rounds_won: number; rounds_lost: number };
-    red: { has_won: boolean; rounds_won: number; rounds_lost: number };
+  stats: {
+    team: string;
+    character: { id: string; name: string };
+    kills: number;
+    deaths: number;
+    assists: number;
   };
+  teams: { red: number; blue: number };
 }
 
-function mapMatch(
-  raw: HenrikMatch,
-  playerName: string,
-  playerTag: string
-): MatchResult | null {
-  const me = raw.players.all_players.find(
-    (p) =>
-      p.name.toLowerCase() === playerName.toLowerCase() &&
-      p.tag.toLowerCase() === playerTag.toLowerCase()
-  );
-  if (!me) return null;
-
-  const myTeam = me.team.toLowerCase() as "blue" | "red";
-  const teamData = raw.teams[myTeam];
-  const opponentTeam = myTeam === "blue" ? raw.teams.red : raw.teams.blue;
+function mapLifetimeMatch(raw: HenrikLifetimeMatch): MatchResult {
+  const myTeam = raw.stats.team.toLowerCase();
+  const myScore = myTeam === "blue" ? raw.teams.blue : raw.teams.red;
+  const oppScore = myTeam === "blue" ? raw.teams.red : raw.teams.blue;
   const kd =
-    me.stats.deaths === 0
-      ? me.stats.kills
-      : +(me.stats.kills / me.stats.deaths).toFixed(2);
+    raw.stats.deaths === 0
+      ? raw.stats.kills
+      : +(raw.stats.kills / raw.stats.deaths).toFixed(2);
 
   return {
-    matchId: raw.metadata.matchid,
-    map: raw.metadata.map,
-    agent: me.character,
-    agentImage: me.assets.agent.full,
-    kills: me.stats.kills,
-    deaths: me.stats.deaths,
-    assists: me.stats.assists,
+    matchId: raw.meta.id,
+    map: raw.meta.map.name,
+    agent: raw.stats.character.name,
+    agentImage: `https://media.valorant-api.com/agents/${raw.stats.character.id}/displayicon.png`,
+    kills: raw.stats.kills,
+    deaths: raw.stats.deaths,
+    assists: raw.stats.assists,
     kd,
-    won: teamData.has_won,
-    teamScore: `${teamData.rounds_won} – ${opponentTeam.rounds_won}`,
-    startedAt: raw.metadata.game_start,
-    mode: raw.metadata.mode || "Unknown",
-    gameLengthSecs: raw.metadata.game_length || 0,
+    won: myScore > oppScore,
+    teamScore: `${myScore} – ${oppScore}`,
+    startedAt: Math.floor(new Date(raw.meta.started_at).getTime() / 1000),
+    mode: raw.meta.mode || "Unknown",
+    gameLengthSecs: 0, // not exposed by v1/lifetime endpoint
   };
 }
 
@@ -211,28 +193,36 @@ export async function getPlayerProfile(
   name: string,
   tag: string
 ): Promise<PlayerProfile> {
-  const [rankRaw, matchesRaw] = await Promise.all([
-    hFetch<HenrikMMRData>(`/v2/mmr/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`),
-    hFetch<HenrikMatch[]>(
-      `/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}?size=50`
-    ),
+  const encodedName = encodeURIComponent(name);
+  const encodedTag = encodeURIComponent(tag);
+  const lifetimeBase = `/v1/lifetime/matches/${region}/${encodedName}/${encodedTag}?size=20`;
+
+  const [rankRaw, page1, page2] = await Promise.all([
+    hFetch<HenrikMMRData>(`/v2/mmr/${region}/${encodedName}/${encodedTag}`),
+    hFetch<HenrikLifetimeMatch[]>(`${lifetimeBase}&page=1`),
+    hFetch<HenrikLifetimeMatch[]>(`${lifetimeBase}&page=2`),
   ]);
 
   const rank = mapRank(rankRaw);
-  const matches = matchesRaw
-    .map((m) => mapMatch(m, name, tag))
-    .filter((m): m is MatchResult => m !== null);
 
-  const totalPlaytimeSecs = matches.reduce((s, m) => s + (m.gameLengthSecs || 0), 0);
+  // Combine pages, deduplicate by matchId
+  const seen = new Set<string>();
+  const allRaw = [...page1, ...page2].filter((m) => {
+    if (seen.has(m.meta.id)) return false;
+    seen.add(m.meta.id);
+    return true;
+  });
+
+  const matches = allRaw.map(mapLifetimeMatch);
 
   return {
     player: { name, tag, region },
     rank,
     stats: deriveStats(matches),
-    matches: matches,
+    matches,
     topAgents: deriveTopAgents(matches),
     topMaps: deriveTopMaps(matches),
-    totalPlaytimeSecs,
+    totalPlaytimeSecs: 0, // not exposed by v1/lifetime endpoint
     statsByMode: deriveStatsByMode(matches),
   };
 }

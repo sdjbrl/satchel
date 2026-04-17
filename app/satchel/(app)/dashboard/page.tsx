@@ -53,9 +53,11 @@ export default async function DashboardPage() {
             <span className="text-white/40 font-normal text-lg">#{tag}</span>
           </h1>
           <p className="text-white/30 text-xs uppercase tracking-widest mt-1">Mon profil</p>
-          <p className="text-white/30 text-xs mt-1">
-            ⏱ {formatPlaytime(profile.totalPlaytimeSecs)} de jeu
-          </p>
+          {profile.totalPlaytimeSecs > 0 && (
+            <p className="text-white/30 text-xs mt-1">
+              ⏱ {formatPlaytime(profile.totalPlaytimeSecs)} de jeu
+            </p>
+          )}
         </div>
         <form action={handleSignOut}>
           <button type="submit" className="text-white/30 hover:text-white text-xs uppercase tracking-widest transition-colors">

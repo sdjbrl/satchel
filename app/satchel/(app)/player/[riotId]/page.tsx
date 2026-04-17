@@ -55,9 +55,11 @@ export default async function PlayerProfilePage({ params }: Props) {
           <span className="text-white/40 font-normal text-lg">#{tag}</span>
         </h1>
         <p className="text-white/30 text-xs uppercase tracking-widest mt-1">Profil public</p>
-        <p className="text-white/30 text-xs mt-1">
-          ⏱ {formatPlaytime(profile.totalPlaytimeSecs)} de jeu
-        </p>
+        {profile.totalPlaytimeSecs > 0 && (
+          <p className="text-white/30 text-xs mt-1">
+            ⏱ {formatPlaytime(profile.totalPlaytimeSecs)} de jeu
+          </p>
+        )}
       </div>
 
       <RankCard rank={profile.rank} />
